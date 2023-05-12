@@ -53,10 +53,10 @@ const TodoProvider = ({ children }) => {
   useEffect(() => {
     const todos = JSON.parse(localStorage.getItem("todos"));
     const done = JSON.parse(localStorage.getItem("done"));
-    if (todos.length !== 0) {
+    if (todos) {
       todoDispatch({ type: "init", todo: todos });
     }
-    if (done.length !== 0) {
+    if (done) {
       doneDispatch({ type: "init", done });
     }
   }, []);
