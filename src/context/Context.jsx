@@ -1,4 +1,4 @@
-import { useContext, createContext, useReducer } from "react";
+import { useContext, createContext, useReducer, useEffect } from "react";
 
 const StateContext = createContext();
 const DispatchContext = createContext();
@@ -7,6 +7,8 @@ const useDispatchContext = () => useContext(DispatchContext);
 
 const todoRecuder = (state, { type, todo }) => {
   switch (type) {
+    case "init":
+      return [...todo];
     case "add":
       return [...state, todo];
     case "edit":
@@ -20,6 +22,8 @@ const todoRecuder = (state, { type, todo }) => {
 
 const doneReducer = (state, { type, done }) => {
   switch (type) {
+    case "init":
+      return [...done];
     case "add":
       return [...state, done];
     case "delete":
@@ -45,6 +49,24 @@ const replacement = (state, target, type) => {
 const TodoProvider = ({ children }) => {
   const [todos, todoDispatch] = useReducer(todoRecuder, []);
   const [done, doneDispatch] = useReducer(doneReducer, []);
+
+  useEffect(() => {
+    const todos = JSON.parse(localStorage.getItem("todos"));
+    const done = JSON.parse(localStorage.getItem("done"));
+    if (todos.length !== 0) {
+      todoDispatch({ type: "init", todo: todos });
+    }
+    if (done.length !== 0) {
+      doneDispatch({ type: "init", done });
+    }
+  }, []);
+
+  useEffect(() => {
+    const todosJson = JSON.stringify(todos);
+    const doneJson = JSON.stringify(done);
+    localStorage.setItem("todos", todosJson);
+    localStorage.setItem("done", doneJson);
+  }, [todos, done]);
 
   return (
     <StateContext.Provider value={[todos, done]}>
